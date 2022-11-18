@@ -1,19 +1,17 @@
 package com.darkmode.precompose.bug
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.darkmode.precompose.bug.ui.theme.DarkModeBugTheme
+import moe.tlaster.precompose.lifecycle.PreComposeActivity
+import moe.tlaster.precompose.lifecycle.setContent
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.rememberNavigator
 
-class MainActivity : ComponentActivity() {
+class MainActivity : PreComposeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,9 +24,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 internal fun BottomNavigationBug() {
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val navController = rememberNavigator()
+    val navBackStackEntry by navController.currentEntry.collectAsState(null)
+    val currentRoute = navBackStackEntry?.route?.route
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -51,16 +49,16 @@ internal fun BottomNavigationBug() {
         }
     ) {
         NavHost(
-            navController = navController,
-            startDestination = Tab.Tab1.toString(),
+            navigator = navController,
+            initialRoute = Tab.Tab1.toString(),
             builder = {
-                composable(Tab.Tab1.toString()) {
+                scene(Tab.Tab1.toString()) {
                     Text(Tab.Tab1.toString())
                 }
-                composable(Tab.Tab2.toString()) {
+                scene(Tab.Tab2.toString()) {
                     Text(Tab.Tab2.toString())
                 }
-                composable(Tab.Tab3.toString()) {
+                scene(Tab.Tab3.toString()) {
                     Text(Tab.Tab3.toString())
                 }
             })
