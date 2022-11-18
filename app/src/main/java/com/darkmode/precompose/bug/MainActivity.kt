@@ -7,6 +7,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.darkmode.precompose.bug.ui.theme.DarkModeBugTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +26,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 internal fun BottomNavigationBug() {
-    var currentRoute by remember { mutableStateOf(Tab.Tab1.toString()) }
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -37,14 +43,27 @@ internal fun BottomNavigationBug() {
                         label = { Text(screen.toString()) },
                         selected = currentRoute == screen.toString(),
                         onClick = {
-                            currentRoute = screen.toString()
+                            navController.navigate(screen.toString())
                         }
                     )
                 }
             }
         }
     ) {
-        Text(currentRoute)
+        NavHost(
+            navController = navController,
+            startDestination = Tab.Tab1.toString(),
+            builder = {
+                composable(Tab.Tab1.toString()) {
+                    Text(Tab.Tab1.toString())
+                }
+                composable(Tab.Tab2.toString()) {
+                    Text(Tab.Tab2.toString())
+                }
+                composable(Tab.Tab3.toString()) {
+                    Text(Tab.Tab3.toString())
+                }
+            })
     }
 }
 
